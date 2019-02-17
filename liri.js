@@ -1,8 +1,12 @@
 require('dotenv').config();
 
+//refering to keys.js file
 var keys = require("./keys.js");
+//read random.txt file
 var fs = require("fs");
+//require info from axios for OMDB API
 var axios = require("axios");
+//require info from moment.js
 var moment = require("moment");
 
 var Spotify = require('node-spotify-api');
@@ -16,11 +20,6 @@ var spotify = new Spotify(keys.spotify);
 var liriArgument = process.argv[2];
 var Argument = process.argv[3];
 
-//movie-this variable to hold the movie name.
-var movieName = "";
-
-//spotify-this-song variable to hold the song name.
-var songName = "";
 
 //Show song info if command is spotify-this-song.
 if (liriArgument === "spotify-this-song") {
@@ -32,13 +31,17 @@ else if (liriArgument === "movie-this") {
     getMovieInfo(Argument);
 }
 
+// else if(liriArgument === ""){
+//     getMovieInfo("Mr. Nobody");
+// }
+
 else if(liriArgument === "consert-this") {
     getConcertInfo(Argument);
 }
 
 //If do-what-it-says, text inside of random.txt is used to run spotify-this-song for "I want it that way."
 else if (liriArgument === "do-what-it-says") {
-    doWhatItSays();
+    doWhatItSays(Argument);
 }
 
 else {
@@ -60,15 +63,15 @@ function getSpotifyInfo(name) {
             data.tracks.items[0].artists[0].name +
             "\n" +
             //Output the song's name.
-            "Song title: " +
+            "\nSong title: " +
             data.tracks.items[0].name +
             "\n" +
             //Output a preview link of song from Spotify.
-            "Preview song: " +
+            "\nPreview song: " +
             data.tracks.items[0].preview_url +
             "\n" +
             //Output the album that  song is from.
-            "Album: " +
+            "\nAlbum: " +
             data.tracks.items[0].album.name +
             "\n"
         );
@@ -84,30 +87,92 @@ function getMovieInfo(name) {
     axios.get("http://www.omdbapi.com/?t=" + name + "&y=&plot=short&apikey=trilogy").then(
         function (response) {
 
-            var rottenTomatoes = response.data.Ratings[1].Source + ": " + response.data.Ratings[1].Value
-            var plot = response.data.Plot;
-            console.log(plot);
-            // console.log("Title of movie: " + response.data.Title);
-            // console.log("Year the movie came out: " + response.data.Year);
-            // console.log(rottenTomatoes);
-            // console.log(response.data.Actors);  
+            //Printing movies informations into bash
+            console.log(
+            "\nTitle of movie: " + 
+            response.data.Title + 
+            "\n" +
+
+            "\nYear the movie came out: " + 
+            response.data.Year + 
+            "\n" +
+
+            "\nIMDB Rating of the movie: " + 
+            response.data.imdbRating +
+            "\n" +
+
+            "\nRotten Tomatoes Rating of the movie: " + 
+            response.data.Ratings[1].Value +
+            "\n" +
+            
+            "\nCountry where the movie was produced: " + 
+            response.data.Country +
+            "\n" +
+
+            "\nLanguage of the movie: " + 
+            response.data.Language +
+            "\n" +
+
+            "\nPlot of the movie: " + 
+            response.data.Plot +
+            "\n" +
+
+            "\nActors in the movie: " + 
+            response.data.Actors +
+            "\n"
+            );  
         }
     );
 
 }
+
 
 function getConcertInfo(artist) {
     axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(
        
         function(response){
             
-            //console.log(response.data[0].venue.name);
-            //console.log(response.data[0].venue.city + ", " + response.data[0].venue.region)
-            console.log(moment(response.data[0].datetime).format("L"));
+            //Console logs consert infos
+            console.log(
+            "\nName of the venue: " +  
+            response.data[0].venue.name +
+            "\n" +
+            //getting concert location
+            "\nVenue location: " + 
+            response.data[0].venue.city + ", " + response.data[0].venue.region +
+            "\n" +
+            //getting concert date
+            "\nDate of the Event: " + 
+            moment(response.data[0].datetime).format("L")  +
+            "\n"
+            );
+           
             
             
         }
     )
+}
+
+function doWhatItSays() {
+
+	fs.readFile("random.txt", "utf8", function(err, data) {
+		if (err) {
+			logOutput.error(err);
+		} else {
+
+			// Creates array with data.
+			var randomArray = data.split(",");
+
+			// Sets action to first item in array.
+			action = randomArray[0];
+
+			// Sets optional third argument to second item in array.
+			argument = randomArray[1];
+
+			// Console log action and argument.
+			console.log(action, argument);
+		}
+	});
 }
 
 

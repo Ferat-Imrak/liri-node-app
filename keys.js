@@ -1,4 +1,4 @@
-console.log('this is loaded');
+console.log('\nThis was searched for ===>');
 
 
 // store my spotify keys
