@@ -31,9 +31,7 @@ else if (liriArgument === "movie-this") {
     getMovieInfo(Argument);
 }
 
-// else if(liriArgument === ""){
-//     getMovieInfo("Mr. Nobody");
-// }
+
 
 else if(liriArgument === "consert-this") {
     getConcertInfo(Argument);
@@ -83,6 +81,16 @@ function getSpotifyInfo(name) {
 
 
 function getMovieInfo(name) {
+
+    //if there is no input for movie name then it will take Mr.Nobody as an input
+    if(!name){
+        name = "Mr.Nobody"
+        console.log(
+        "\nIf you haven't watched Mr. Nobody, then you should: http://www.imdb.com/title/tt0485947/" +
+        "\n" +
+        "\nIt's on Netflix!");
+    };
+    console.log("\n---------------------------------------------")
     // Run a request with axios to the OMDB API with the movie specified
     axios.get("http://www.omdbapi.com/?t=" + name + "&y=&plot=short&apikey=trilogy").then(
         function (response) {
@@ -121,10 +129,14 @@ function getMovieInfo(name) {
             response.data.Actors +
             "\n"
             );  
+
         }
+
     );
 
 }
+
+
 
 
 function getConcertInfo(artist) {
@@ -161,16 +173,11 @@ function doWhatItSays() {
 		} else {
 
 			// Creates array with data.
-			var randomArray = data.split(",");
+            var randomArray = data.split(",");
+            
+            //callback spotify function for do-what-it-says
+            getSpotifyInfo(randomArray[1]);
 
-			// Sets action to first item in array.
-			action = randomArray[0];
-
-			// Sets optional third argument to second item in array.
-			argument = randomArray[1];
-
-			// Console log action and argument.
-			console.log(action, argument);
 		}
 	});
 }
