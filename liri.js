@@ -14,7 +14,7 @@ var spotify = new Spotify(keys.spotify);
 
 //spotify-this-song, movie-this, do-what-it-says array
 var liriArgument = process.argv[2];
-var songArgument = process.argv[3];
+var Argument = process.argv[3];
 
 //movie-this variable to hold the movie name.
 var movieName = "";
@@ -24,12 +24,16 @@ var songName = "";
 
 //Show song info if command is spotify-this-song.
 if (liriArgument === "spotify-this-song") {
-    getSpotifyInfo(songArgument);
+    getSpotifyInfo(Argument);
 }
 
 //Output information about that movie if command is movie-this.
 else if (liriArgument === "movie-this") {
-    getMovieInfo();
+    getMovieInfo(Argument);
+}
+
+else if(liriArgument === "consert-this") {
+    getConcertInfo(Argument);
 }
 
 //If do-what-it-says, text inside of random.txt is used to run spotify-this-song for "I want it that way."
@@ -49,20 +53,24 @@ function getSpotifyInfo(name) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-
-        console.log( 
+        // console.log("Test Console: ", data.tracks.items[0].preview_url)
+        console.log(
             //Output the artist name
-            "Artist: " +
-            data.tracks.items[5].artists[0].name +
-            "\r\n" +
+            "\nArtist: " +
+            data.tracks.items[0].artists[0].name +
+            "\n" +
             //Output the song's name.
             "Song title: " +
-            data.tracks.items[5].name +
-            "\r\n" +
+            data.tracks.items[0].name +
+            "\n" +
+            //Output a preview link of song from Spotify.
+            "Preview song: " +
+            data.tracks.items[0].preview_url +
+            "\n" +
             //Output the album that  song is from.
             "Album: " +
-            data.tracks.items[5].album.name +
-            "\r\n"
+            data.tracks.items[0].album.name +
+            "\n"
         );
     });
 
@@ -71,18 +79,36 @@ function getSpotifyInfo(name) {
 
 
 
-function getMovieInfo() {
-    axios.get({ title: 'Saw', year: 2004 }, true, function(err, movie) {
-        if(err) {
-            return console.error(err);
+function getMovieInfo(name) {
+    // Run a request with axios to the OMDB API with the movie specified
+    axios.get("http://www.omdbapi.com/?t=" + name + "&y=&plot=short&apikey=trilogy").then(
+        function (response) {
+
+            var rottenTomatoes = response.data.Ratings[1].Source + ": " + response.data.Ratings[1].Value
+            var plot = response.data.Plot;
+            console.log(plot);
+            // console.log("Title of movie: " + response.data.Title);
+            // console.log("Year the movie came out: " + response.data.Year);
+            // console.log(rottenTomatoes);
+            // console.log(response.data.Actors);  
         }
-     
-        if(!movie) {
-            return console.log('Movie not found!');
-        }
-        console.log('%s (%d) %d/10', movie.title, movie.year, movie.imdb.rating);
-        console.log(movie.plot);
-    });
-    
+    );
+
 }
+
+function getConcertInfo(artist) {
+    axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(
+       
+        function(response){
+            
+            //console.log(response.data[0].venue.name);
+            //console.log(response.data[0].venue.city + ", " + response.data[0].venue.region)
+            console.log(moment(response.data[0].datetime).format("L"));
+            
+            
+        }
+    )
+}
+
+
 
